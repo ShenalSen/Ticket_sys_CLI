@@ -28,7 +28,15 @@ public final class Vendor implements Runnable {
 
     @Override
     public void run() {
-
+        for (TicketPool pool : Configuration.getPools()) {
+            if (pool.getVendorId() == vendorId) {
+                try {
+                    pool.putTicketsToThePool(3);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
     public static void vendorOperations(Scanner scanner) {

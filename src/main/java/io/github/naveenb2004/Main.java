@@ -1,7 +1,5 @@
 package io.github.naveenb2004;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -45,7 +43,7 @@ public class Main {
                 stringBuilder.append("\tAdded vendor : ").append(vendorId);
                 for (int j = 0; j < 5; j++) {
                     long poolId = TicketPool.getGlobalPoolId();
-                    Configuration.addPool(new TicketPool(poolId, vendorId, 10, 50));
+                    Configuration.addPool(new TicketPool(poolId, vendorId, 10, 10));
                     stringBuilder.append("\tAdded pool : ").append(poolId);
                 }
                 long customerId = Customer.getGlobalCustomerId();
@@ -70,7 +68,7 @@ public class Main {
                 stringBuilder.append("\tAdded vendor : ").append(vendorId);
                 for (int j = 0; j < 5; j++) {
                     long poolId = TicketPool.getGlobalPoolId();
-                    Configuration.addPool(new TicketPool(poolId, vendorId, 10, 50));
+                    Configuration.addPool(new TicketPool(poolId, vendorId, 10, 10));
                     stringBuilder.append("\tAdded pool : ").append(poolId);
                 }
                 long customerId = Customer.getGlobalCustomerId();
@@ -91,20 +89,34 @@ public class Main {
         System.out.println("Added vendors & customers!\n");
 
         System.out.println("Beginning transaction...");
-        thread0 = Thread.ofVirtual().start(() -> {
-            for (Vendor vendor : Configuration.getVendors()) {
-                Thread.ofVirtual().start(vendor);
-            }
+        Thread thread2 = Thread.ofVirtual().start(() -> {
+//            for (int i = 0; i < 5; i++) {
+                for (Vendor vendor : Configuration.getVendors()) {
+                    Thread.ofVirtual().start(vendor);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+//            }
         });
 
-        thread1 = Thread.ofVirtual().start(() -> {
-            for (Customer customer : Configuration.getCustomers()) {
-                Thread.ofVirtual().start(customer);
-            }
+        Thread thread3 = Thread.ofVirtual().start(() -> {
+//            for (int i = 0; i < 5; i++) {
+                for (Customer customer : Configuration.getCustomers()) {
+                    Thread.ofVirtual().start(customer);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+//            }
         });
 
-        thread0.join();
-        thread1.join();
+        thread2.join();
+        thread3.join();
         System.out.println("Transaction completed!");
     }
 }

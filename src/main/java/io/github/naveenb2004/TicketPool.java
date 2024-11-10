@@ -37,9 +37,11 @@ public final class TicketPool {
     public synchronized void putTicketsToThePool(int ticketsCount) throws InterruptedException {
         for (int i = 0; i < ticketsCount; i++) {
             if (totalNumberOfTickets + 1 > maximumTicketCapacity) {
+                System.out.println("Pool-" + poolId + " : Too many tickets");
                 wait();
             }
             totalNumberOfTickets++;
+            System.out.println("Pool-" + poolId + " : Ticket Added");
             notify();
         }
     }
@@ -47,9 +49,11 @@ public final class TicketPool {
     public synchronized void getTicketsFromThePool(int ticketsCount) throws InterruptedException {
         for (int i = 0; i < ticketsCount; i++) {
             if (totalNumberOfTickets - 1 == 0) {
+                System.out.println("Pool-" + poolId + " : No Tickets");
                 wait();
             }
             totalNumberOfTickets--;
+            System.out.println("Pool-" + poolId + " : Ticket Removed");
             notify();
         }
     }

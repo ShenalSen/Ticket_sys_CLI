@@ -28,7 +28,13 @@ public final class Customer implements Runnable {
 
     @Override
     public void run() {
-
+        for (TicketPool pool : Configuration.getPools()) {
+            try {
+                pool.getTicketsFromThePool(2);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public static void customerOperations(Scanner scanner) {
