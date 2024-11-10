@@ -1,64 +1,69 @@
 package io.github.naveenb2004;
 
 public final class TicketPool {
-    private static long globalPoolId = 1L;
-
-    private final long poolId;
-    private final long vendorId;
     private int totalNumberOfTickets;
-    private final int maximumTicketCapacity;
+    private final int ticketReleaseRate;
+    private final int ticketRetrievalRate;
+    private final int maximumTicketsCapacity;
 
-    public TicketPool(long poolId,
-                      long vendorId,
-                      int totalNumberOfTickets,
-                      int maximumTicketCapacity) {
-        this.poolId = poolId;
-        this.vendorId = vendorId;
-        this.totalNumberOfTickets = totalNumberOfTickets;
-        this.maximumTicketCapacity = maximumTicketCapacity;
-    }
-
-    public long getPoolId() {
-        return poolId;
-    }
-
-    public long getVendorId() {
-        return vendorId;
+    public TicketPool(Configuration configuration) {
+        totalNumberOfTickets = configuration.totalNumberOfTickets();
+        ticketReleaseRate = configuration.ticketReleaseRate();
+        ticketRetrievalRate = configuration.ticketRetrievalRate();
+        maximumTicketsCapacity = configuration.maximumTicketsCapacity();
     }
 
     public int getTotalNumberOfTickets() {
         return totalNumberOfTickets;
     }
 
-    public int getMaximumTicketCapacity() {
-        return maximumTicketCapacity;
+    public int getTicketReleaseRate() {
+        return ticketReleaseRate;
     }
 
-    public synchronized void putTicketsToThePool(int ticketsCount) throws InterruptedException {
-        for (int i = 0; i < ticketsCount; i++) {
-            if (totalNumberOfTickets + 1 > maximumTicketCapacity) {
-                System.out.println("Pool-" + poolId + " : Too many tickets");
+    public int getTicketRetrievalRate() {
+        return ticketRetrievalRate;
+    }
+
+    public int getMaximumTicketsCapacity() {
+        return maximumTicketsCapacity;
+    }
+
+    public synchronized void addTickets(Vendor vendor, int count) throws InterruptedException {
+        if (count > ticketReleaseRate) {
+            System.out.println(vendor.getVendorId() + " : Release rate exceeded (" + count + "); ignoring...");
+            return;
+        }
+
+        for (int i = 0; i < count; i++) {
+            if (totalNumberOfTickets + 1 > maximumTicketsCapacity) {
+                System.out.println(vendor.getVendorId() + " : Maximum tickets capacity reached (" +
+                        totalNumberOfTickets + "/" + maximumTicketsCapacity + "); waiting...");
                 wait();
             }
             totalNumberOfTickets++;
-            System.out.println("Pool-" + poolId + " : Ticket Added");
+            System.out.println(vendor.getVendorId() + " : Ticket added to the pool ("
+                    + totalNumberOfTickets + "/" + maximumTicketsCapacity + ").");
             notify();
         }
     }
 
-    public synchronized void getTicketsFromThePool(int ticketsCount) throws InterruptedException {
-        for (int i = 0; i < ticketsCount; i++) {
-            if (totalNumberOfTickets - 1 == 0) {
-                System.out.println("Pool-" + poolId + " : No Tickets");
+    public synchronized void removeTickets(Customer customer, int count) throws InterruptedException {
+        if (count > ticketRetrievalRate) {
+            System.out.println(customer.getCustomerId() + " : Retrieval rate exceeded (" + count + "); ignoring...");
+            return;
+        }
+
+        for (int i = 0; i < count; i++) {
+            if (totalNumberOfTickets - 1 < 0) {
+                System.out.println(customer.getCustomerId() + " : No more tickets to remove (" +
+                        totalNumberOfTickets + "/" + maximumTicketsCapacity + "); waiting...");
                 wait();
             }
             totalNumberOfTickets--;
-            System.out.println("Pool-" + poolId + " : Ticket Removed");
+            System.out.println(customer.getCustomerId() + " : Ticket removed from the pool ("
+                    + totalNumberOfTickets + "/" + maximumTicketsCapacity + ").");
             notify();
         }
-    }
-
-    public static synchronized long getGlobalPoolId() {
-        return globalPoolId++;
     }
 }

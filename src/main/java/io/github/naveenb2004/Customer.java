@@ -1,66 +1,52 @@
 package io.github.naveenb2004;
 
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class Customer implements Runnable {
-    private static long globalCustomerId = 1L;
+    private static long globalCustomerId = 0L;
+    private static final List<Customer> customers = new ArrayList<>();
 
-    private final long customerId;
-    private final int retrievalInterval;
+    private final String customerId;
 
-    public Customer(long customerId,
-                    int retrievalInterval) {
-        this.customerId = customerId;
-        this.retrievalInterval = retrievalInterval;
+    public Customer() {
+        customerId = "CUSTOMER-" + globalCustomerId++;
     }
 
-    public long getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public int getRetrievalInterval() {
-        return retrievalInterval;
+    public static void addCustomers(int count) {
+        for (int i = 0; i < count; i++) {
+            customers.add(new Customer());
+        }
     }
 
-    public static synchronized long getGlobalCustomerId() {
-        return globalCustomerId++;
+    public static List<Customer> getCustomers() {
+        return customers;
     }
 
     @Override
     public void run() {
-        for (TicketPool pool : Configuration.getPools()) {
+        for (int i = 0; i < 5; i++) {
             try {
-                pool.getTicketsFromThePool(2);
+                TicketSystem.getTicketsPool().removeTickets(this, i);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
-    }
 
-    public static void customerOperations(Scanner scanner) {
-        while (true) {
-            System.out.println("""
-                    1 - Add new customer
-                    0 - Back
-                    >\s""");
-            char option = scanner.next().charAt(0);
-            switch (option) {
-                case '1' -> {
-                    System.out.println("Enter ticket retrieval interval : ");
-                    int interval = scanner.nextInt();
-                    if (interval <= 0) {
-                        System.out.println("Invalid interval");
-                        continue;
-                    }
-
-                    Configuration.addCustomer(new Customer(globalCustomerId++, interval));
-                    System.out.println("Success!");
-                }
-                case '0' -> {
-                    return;
-                }
+        for (int i = 5; i > 0; i--) {
+            try {
+                TicketSystem.getTicketsPool().removeTickets(this, i);
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
-
         }
+
+        TicketSystem.getTicketSystem().resumeMainThread();
     }
 }
