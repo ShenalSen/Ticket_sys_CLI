@@ -1,5 +1,6 @@
 package io.github.naveenb2004;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public final class TicketSystem {
@@ -8,7 +9,7 @@ public final class TicketSystem {
     private static int userThreadStatus;
     private static TicketPool ticketsPool;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         System.out.println("""
                 *************************
                 ***   Ticket System   ***

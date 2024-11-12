@@ -1,7 +1,10 @@
 package io.github.naveenb2004;
 
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 
 public final class TicketPool {
@@ -33,7 +36,7 @@ public final class TicketPool {
         return maximumTicketsCapacity;
     }
 
-    public synchronized void addTickets(Vendor vendor, int count) throws InterruptedException {
+    public synchronized void addTickets(Vendor vendor, int count) throws InterruptedException, IOException {
         String logLine;
         if (count > ticketReleaseRate) {
             logLine = getTimestamp() + "\t" + vendor.getVendorId() + " :\tRelease rate exceeded (" +
@@ -60,7 +63,7 @@ public final class TicketPool {
         }
     }
 
-    public synchronized void removeTickets(Customer customer, int count) throws InterruptedException {
+    public synchronized void removeTickets(Customer customer, int count) throws InterruptedException, IOException {
         String logLine;
         if (count > ticketRetrievalRate) {
             logLine = getTimestamp() + "\t" + customer.getCustomerId() + " :\tRetrieval rate exceeded (" +
@@ -87,12 +90,12 @@ public final class TicketPool {
         }
     }
 
-    public static synchronized void writeToLog(String logLine) {
-        try (FileWriter writer = new FileWriter("TicketSystemSimulation.log")) {
-            writer.append(logLine).append("\n");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public static synchronized void writeToLog(String logLine) throws IOException {
+        Path path = Paths.get("TicketSystemSimulation.log");
+        if (!Files.exists(path)) {
+            Files.createFile(path);
         }
+        Files.writeString(path, logLine + "\n", StandardOpenOption.APPEND);
     }
 
     public static String getTimestamp() {

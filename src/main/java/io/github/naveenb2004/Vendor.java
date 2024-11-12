@@ -1,5 +1,6 @@
 package io.github.naveenb2004;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public final class Vendor implements Runnable {
             try {
                 TicketSystem.getTicketsPool().addTickets(this, i);
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -42,7 +43,7 @@ public final class Vendor implements Runnable {
             try {
                 TicketSystem.getTicketsPool().addTickets(this, i);
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }
         }
