@@ -13,7 +13,7 @@ public record Configuration(int totalNumberOfTickets,
     public void save() {
         System.out.println("Saving configuration...");
         Gson gson = new Gson();
-        try (FileWriter writer = new FileWriter("TicketSystem.json")) {
+        try (FileWriter writer = new FileWriter("TicketSystemConfiguration.json")) {
             writer.write(gson.toJson(this));
         } catch (IOException e) {
             throw new RuntimeException(e);
