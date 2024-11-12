@@ -13,6 +13,22 @@ public final class TicketPool {
         maximumTicketsCapacity = configuration.maximumTicketsCapacity();
     }
 
+    public int getTotalNumberOfTickets() {
+        return totalNumberOfTickets;
+    }
+
+    public int getTicketReleaseRate() {
+        return ticketReleaseRate;
+    }
+
+    public int getTicketRetrievalRate() {
+        return ticketRetrievalRate;
+    }
+
+    public int getMaximumTicketsCapacity() {
+        return maximumTicketsCapacity;
+    }
+
     public synchronized void addTickets(Vendor vendor, int count) throws InterruptedException {
         if (count > ticketReleaseRate) {
             System.out.println(vendor.getVendorId() + " : Release rate exceeded (" + count + "); ignoring...");

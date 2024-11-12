@@ -69,6 +69,7 @@ public final class TicketSystem {
                     2 - Add Vendors
                     3 - Add Customers
                     4 - Simulate System
+                    5 - Show Tickets Pool status
                     0 - Exit
                     >\s""");
             char option = scanner.next().charAt(0);
@@ -105,6 +106,7 @@ public final class TicketSystem {
                     }
                 }
                 case '4' -> ticketSystem.simulateSystem();
+                case '5' -> showTicketPoolStatus();
                 case '0' -> System.exit(0);
             }
         }
@@ -127,6 +129,20 @@ public final class TicketSystem {
         customerThread.join();
 
         wait();
+    }
+
+    private static void showTicketPoolStatus() {
+        System.out.printf("""
+                        # Tickets Pool Status
+                        Total number of tickets :\t%s
+                        Tickets release rate :\t%s
+                        Tickets retrieval rate :\t%s
+                        Maximum tickets capacity :\t%s
+                        """,
+                ticketsPool.getTotalNumberOfTickets(),
+                ticketsPool.getTicketReleaseRate(),
+                ticketsPool.getTicketRetrievalRate(),
+                ticketsPool.getMaximumTicketsCapacity());
     }
 
     public static TicketSystem getTicketSystem() {
